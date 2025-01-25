@@ -1,6 +1,5 @@
 name: Terraform CD
 
-# Trigger on pull requests and pushes to main (or specify other branches)
 on:
   pull_request:
     branches: [ "main" ]
@@ -10,10 +9,10 @@ on:
 jobs:
   terraform:
     name: Terraform Deploy
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. Check out the repository
+      # 1. Check out your repository code
       - name: Check out code
         uses: actions/checkout@v4
 
@@ -21,33 +20,35 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          # This automatically configures the CLI to use your TF_API_TOKEN if provided.
-          # If you store TF_API_TOKEN in GitHub Secrets, the action picks it up.
+          # Pin a Terraform version if you like (optional)
+          terraform_version: '1.4.0'
+          # This ensures Terraform CLI can authenticate with Terraform Cloud
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+  
 
+      # 3. Terraform Init
       - name: Terraform Init
-        working-directory: ./terraform
+        working-directory: ./prod-terraform
         run: terraform init
 
-      # 5. Terraform Format check
+      # 4. Terraform Format Check (fails CI if formatting is off)
       - name: Terraform Format
-        working-directory: ./terraform
+        working-directory: ./prod-terraform
         run: terraform fmt -check
 
-      # 6. Terraform Validate
+      # 5. Terraform Validate (checks syntax and basic config)
       - name: Terraform Validate
-        working-directory: ./terraform
+        working-directory: ./prod-terraform
         run: terraform validate
 
-      # 7. Terraform Plan
+      # 6. Terraform Plan (shows changes)
       - name: Terraform Plan
-        working-directory: ./terraform
+        working-directory: ./prod-terraform
         run: terraform plan -no-color
 
-      # 8. (Optional) Automatically apply on push to main
-      # Does this run on PR?
+      # 7. Terraform Apply (only applies on push to main, not on PR)
       - name: Terraform Apply
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        working-directory: ./terraform
+        working-directory: ./prod-terraform
         run: terraform apply -auto-approve -no-color
