@@ -1,10 +1,10 @@
-terraform { 
-  cloud { 
-    
-    organization = "potions-369" 
+terraform {
+  cloud {
 
-    workspaces { 
-      name = "potion-infra" 
-    } 
-  } 
+    organization = "potions-369"
+
+    workspaces {
+      name = "potion-infra"
+    }
+  }
 }
