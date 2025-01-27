@@ -11,6 +11,14 @@ jobs:
     name: Terraform Deploy
     runs-on: ubuntu-latest
 
+    env:
+      TF_VAR_project_name: ${{ vars.SUPABASE_PROJECT_NAME }}  
+      TF_VAR_environment: ${{ vars.STAGE}}    
+      TF_VAR_ably_account_token: ${{ secrets.ABLY_ACCOUNT_TOKEN }}
+      TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TF_VAR_supabase_db_pass: ${{ secrets.SUPABASE_DB_PASS }}
+      TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
+
     steps:
       # 1. Check out your repository code
       - name: Check out code
@@ -24,18 +32,7 @@ jobs:
           terraform_version: '1.10.4'
           # This ensures Terraform CLI can authenticate with Terraform Cloud
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
   
-      - name: Set environment variables
-        run: echo "Terraform env vars set"
-        env:
-          TF_VAR_project_name: ${{ vars.SUPABASE_PROJECT_NAME }}  
-          TF_VAR_environment: ${{ vars.STAGE}}    
-          TF_VAR_ably_account_token: ${{ secrets.ABLY_ACCOUNT_TOKEN }}
-          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          TF_VAR_supabase_db_pass: ${{ secrets.SUPABASE_DB_PASS }}
-          TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
-
       # 3. Terraform Init
       - name: Terraform Init
         working-directory: ./prod-terraform
