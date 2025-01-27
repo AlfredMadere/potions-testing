@@ -14,6 +14,9 @@ terraform {
     supabase = {
       source = "supabase/supabase"
     }
+    time = {
+      source = "hashicorp/time"
+    }
   }
 
 
@@ -132,6 +135,13 @@ resource "null_resource" "insert_test_world" {
   }
 }
 
+# Add delay before fetching API keys
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.poll_project_status]
+  create_duration = "30s"
+}
+
 data "supabase_apikeys" "dev" {
+  depends_on = [time_sleep.wait_30_seconds]
   project_ref = supabase_project.potions.id
 }
