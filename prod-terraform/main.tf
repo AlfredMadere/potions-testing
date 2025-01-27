@@ -30,8 +30,8 @@ provider "supabase" {
 
 # Create Ably app
 resource "ably_app" "potions" {
-  name = "${var.project_name}-${var.environment}"
-  status = "enabled"
+  name     = "${var.project_name}-${var.environment}"
+  status   = "enabled"
   tls_only = false
 }
 
@@ -47,9 +47,9 @@ resource "ably_api_key" "root" {
 # Create Supabase project
 resource "supabase_project" "potions" {
   organization_id   = var.supabase_organization_id
-  name             = "${var.project_name}-${var.environment}"
+  name              = "${var.project_name}-${var.environment}"
   database_password = var.supabase_db_pass
-  region           = "us-west-1"
+  region            = "us-west-1"
 
   lifecycle {
     ignore_changes = [
@@ -64,7 +64,7 @@ resource "null_resource" "poll_project_status" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = <<-EOT
+    command     = <<-EOT
       set -e
       TIMEOUT=300   # 5 minutes
       INTERVAL=15   # check every 15 seconds
@@ -93,7 +93,7 @@ resource "null_resource" "poll_project_status" {
 
 # Get pooler connection string
 data "supabase_pooler" "main" {
-  depends_on = [null_resource.poll_project_status]
+  depends_on  = [null_resource.poll_project_status]
   project_ref = supabase_project.potions.id
 }
 
