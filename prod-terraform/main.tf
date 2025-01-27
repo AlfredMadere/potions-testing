@@ -15,6 +15,8 @@ terraform {
       source = "supabase/supabase"
     }
   }
+
+ 
 }
 
 

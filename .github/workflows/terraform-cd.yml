@@ -21,7 +21,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           # Pin a Terraform version if you like (optional)
-          terraform_version: '1.4.0'
+          terraform_version: '1.10.4'
           # This ensures Terraform CLI can authenticate with Terraform Cloud
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
