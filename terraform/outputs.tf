@@ -9,3 +9,8 @@ output "db_connection_string" {
   value       = local.db_connection_string
   sensitive   = true
 }
+
+output "pooler_debug" {
+  value = data.supabase_pooler.main
+  sensitive = true  # Prevent sensitive values from being logged
+}

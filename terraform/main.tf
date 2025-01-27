@@ -51,9 +51,41 @@ resource "supabase_project" "potions" {
 }
 
 
+resource "null_resource" "poll_project_status" {
+  depends_on = [supabase_project.potions]
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command = <<-EOT
+      set -e
+      TIMEOUT=300   # 5 minutes
+      INTERVAL=15   # check every 15 seconds
+      ELAPSED=0
+
+      while [ $ELAPSED -lt $TIMEOUT ]; do
+        STATUS=$(curl -s -H "Authorization: Bearer ${var.supabase_access_token}" \
+          https://api.supabase.io/v1/projects/${supabase_project.potions.id} \
+          | jq -r '.status')
+
+        if [ "$STATUS" == "ACTIVE_HEALTHY" ]; then
+          echo "Project status is ACTIVE_HEALTHY. Continuing..."
+          exit 0
+        fi
+
+        echo "Current project status is: $STATUS. Waiting..."
+        sleep $INTERVAL
+        ELAPSED=$((ELAPSED + INTERVAL))
+      done
+
+      echo "Project status did not reach ACTIVE_HEALTHY within $TIMEOUT seconds."
+      exit 1
+    EOT
+  }
+}
 
 # Get pooler connection string
 data "supabase_pooler" "main" {
+  depends_on = [null_resource.poll_project_status]
   project_ref = supabase_project.potions.id
 }
 
