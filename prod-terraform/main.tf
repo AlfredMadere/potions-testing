@@ -17,6 +17,10 @@ terraform {
     time = {
       source = "hashicorp/time"
     }
+     render = {
+      source = "render-oss/render"
+      version = "1.4.0"
+    }
   }
 
 
@@ -31,6 +35,12 @@ provider "ably" {
 # Configure Supabase provider
 provider "supabase" {
   access_token = var.supabase_access_token
+}
+
+provider "render" {
+  api_key = var.render_api_key
+  owner_id = "usr-ck6tlnfsasqs73bhtfc0"
+
 }
 
 # Create Ably app
@@ -144,4 +154,43 @@ resource "time_sleep" "wait_30_seconds" {
 data "supabase_apikeys" "dev" {
   depends_on  = [time_sleep.wait_30_seconds]
   project_ref = supabase_project.potions.id
+}
+
+
+resource "render_web_service" "potions_auth" {
+  name         = "${var.project_name}-${var.environment}-auth"
+  plan = "starter" 
+  region       = "oregon"       # or "us-east", "frankfurt", etc.
+  start_command      = "pnpm start"
+  pre_deploy_command = "echo 'hello world'"
+  root_directory = "packages/auth-server"
+
+  runtime_source = {
+    native_runtime = {
+      auto_deploy   = true
+      branch        = "main"
+      build_command = "pnpm install && pnpm build"
+      build_filter = {
+        paths         = ["src/**"]
+        ignored_paths = ["tests/**"]
+      }
+      repo_url = "https://github.com/AlfredMadere/potions-testing"
+      runtime  = "node"
+    }
+  }
+
+  env_vars = {
+    "ABLY_API_KEY"= {value: "${ably_api_key.root.key}"},
+    "SUPABASE_URL"= {value: "https://${supabase_project.potions.id}.supabase.co"},
+    "SUPABASE_SERVICE_KEY"= {value: "${data.supabase_apikeys.dev.service_role_key}"},
+  }
+
+  # Optionally depends on Supabase or Ably if you want to ensure
+  # everything is provisioned first:
+  depends_on = [
+    data.supabase_apikeys.dev,
+    null_resource.insert_test_world,
+    null_resource.database_setup,
+    ably_api_key.root,
+    ]
 }

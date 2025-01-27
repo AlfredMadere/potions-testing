@@ -33,3 +33,8 @@ variable "supabase_organization_id" {
   type        = string
 }
 
+variable "render_api_key" {
+  description = "Render API key"
+  type        = string
+  sensitive   = true
+}
