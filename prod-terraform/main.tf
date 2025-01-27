@@ -21,6 +21,10 @@ terraform {
       source  = "render-oss/render"
       version = "1.4.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "6.5.0"
+    }
   }
 
 
@@ -40,7 +44,10 @@ provider "supabase" {
 provider "render" {
   api_key  = var.render_api_key
   owner_id = var.render_owner_id
+}
 
+provider "github" {
+  token = var.github_token
 }
 
 # Create Ably app
@@ -193,4 +200,10 @@ resource "render_web_service" "potions_auth" {
     null_resource.database_setup,
     ably_api_key.root,
   ]
+}
+
+resource "github_actions_variable" "server_url" {
+  repository    = "potions-testing"
+  variable_name = "SERVER_URL"
+  value         = render_web_service.potions_auth.url
 }

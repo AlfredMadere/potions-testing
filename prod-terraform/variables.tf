@@ -43,3 +43,9 @@ variable "render_owner_id" {
   description = "Render owner ID"
   type        = string
 }
+
+variable "github_token" {
+  description = "GitHub token"
+  type        = string
+  sensitive   = true
+}
