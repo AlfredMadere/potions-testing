@@ -22,7 +22,7 @@ jobs:
   terraform:
     name: Terraform Deploy
     runs-on: ubuntu-latest
-    environment: prod
+    # environment: prod
 
     env:
       TF_VAR_project_name: ${{ vars.SUPABASE_PROJECT_NAME }}  
@@ -30,6 +30,7 @@ jobs:
       TF_VAR_ably_account_token: ${{ secrets.ABLY_ACCOUNT_TOKEN }}
       TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       TF_VAR_supabase_db_pass: ${{ secrets.SUPABASE_DB_PASS }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASS }} # necessary for supabase cli to not prompt for one
       TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
       TF_VAR_render_api_key: ${{ secrets.RENDER_API_KEY }}
       TF_VAR_render_owner_id: ${{ secrets.RENDER_OWNER_ID }}
@@ -43,6 +44,11 @@ jobs:
       # 1.1 Install Dependencies
       - name: Install PostgreSQL Client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      # 1.2 Install Supabase CLI
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
       # 2. Set up Terraform
       - name: Set up Terraform
