@@ -184,7 +184,7 @@ resource "null_resource" "insert_test_world" {
 
 
 data "supabase_apikeys" "dev" {
-    depends_on  = [time_sleep.wait_for_supabase]
+  depends_on  = [time_sleep.wait_for_supabase]
   project_ref = supabase_project.potions.id
 }
 
@@ -195,7 +195,7 @@ resource "render_web_service" "potions_auth" {
   region             = "oregon"
   start_command      = "cd packages/auth-server && pnpm start"
   pre_deploy_command = "echo 'hello world'"
-  root_directory     = "."  # Changed to root directory
+  root_directory     = "." # Changed to root directory
 
   runtime_source = {
     native_runtime = {
@@ -248,7 +248,7 @@ resource "render_background_worker" "potions_test_world" {
   name               = "${var.project_name}-${var.environment}-test-world"
   plan               = "starter"
   region             = "oregon" # or "us-east", "frankfurt", etc.
-   start_command      = "cd packages/server && pnpm serve test-world"
+  start_command      = "cd packages/server && pnpm serve test-world"
   pre_deploy_command = "echo 'hello world'"
   root_directory     = "."
 
@@ -267,7 +267,7 @@ resource "render_background_worker" "potions_test_world" {
   }
 
   env_vars = {
-    "ABLY_API_KEY"         = { value : "${ably_api_key.root.key}" },
-    "AUTH_SERVER_URL"         = { value : "${render_web_service.potions_auth.url}" },
+    "ABLY_API_KEY"    = { value : "${ably_api_key.root.key}" },
+    "AUTH_SERVER_URL" = { value : "${render_web_service.potions_auth.url}" },
   }
 }
