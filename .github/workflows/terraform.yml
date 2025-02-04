@@ -22,7 +22,7 @@ jobs:
   terraform:
     name: Terraform Deploy
     runs-on: ubuntu-latest
-    environment: prod
+    # environment: prod
 
     env:
       TF_VAR_project_name: ${{ vars.SUPABASE_PROJECT_NAME }}  
