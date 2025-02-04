@@ -42,6 +42,7 @@ variable "render_api_key" {
 variable "render_owner_id" {
   description = "Render owner ID"
   type        = string
+  sensitive   = true
 }
 
 variable "github_token" {
