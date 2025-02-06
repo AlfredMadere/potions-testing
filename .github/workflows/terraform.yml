@@ -8,12 +8,14 @@
 # Credit: AlfredMadere
 # Modified: EthanV1920
 
-name: 'Terraform Server Depoly'
+name: 'Terraform Server Deploy'
 
 on:
   push:
-    branches: [ "prod" ]
+    branches: 
+      - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,7 +24,7 @@ jobs:
   terraform:
     name: Terraform Deploy
     runs-on: ubuntu-latest
-    # environment: prod
+    environment: prod
 
     env:
       TF_VAR_project_name: ${{ vars.SUPABASE_PROJECT_NAME }}  
@@ -84,3 +86,12 @@ jobs:
       #if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         working-directory: ./.terraform-prod
         run: terraform apply -auto-approve -no-color
+
+      # 8. Trigger Client Build
+      - name: Trigger Client Build
+      #if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          curl -X POST -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          --data '{"event_type": "trigger-client-build"}' \
+          https://api.github.com/repos/${{ github.repository }}/dispatches
