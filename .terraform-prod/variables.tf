@@ -75,7 +75,7 @@ variable "organization_name" {
   }
 
   variable "repository_full_name" {
-    description: "Name of repository"
+    description = "Name of repository"
     type = string
     default = "AlfredMadere/potions-testing"
   }
