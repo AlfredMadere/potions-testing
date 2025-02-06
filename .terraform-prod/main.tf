@@ -1,10 +1,10 @@
 terraform {
   cloud {
 
-    organization = vars.organization_name
+    organization = var.organization_name
 
     workspaces {
-      name = vars.workspace_name
+      name = var.workspace_name
     }
   }
   required_providers {
@@ -48,7 +48,7 @@ provider "render" {
 
 provider "github" {
   token = var.github_token
-  owner = vars.owner
+  owner = var.owner
 }
 
 # Create Ably app
@@ -204,7 +204,7 @@ resource "render_web_service" "potions_auth" {
         paths         = ["src/**"]
         ignored_paths = ["tests/**"]
       }
-      repo_url = vars.repository_url
+      repo_url = var.repository_url
       runtime  = "node"
     }
   }
@@ -226,7 +226,7 @@ resource "render_web_service" "potions_auth" {
 }
 
 data "github_repository" "repo" {
-  full_name = vars.repository_full_name
+  full_name = var.repository_full_name
 }
 
 resource "github_repository_environment" "repo_environment" {
@@ -258,7 +258,7 @@ resource "render_background_worker" "potions_test_world" {
         paths         = ["src/**"]
         ignored_paths = ["tests/**"]
       }
-      repo_url = vars.repository_url
+      repo_url = var.repository_url
       runtime  = "node"
     }
   }
