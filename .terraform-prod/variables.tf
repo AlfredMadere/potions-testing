@@ -42,7 +42,6 @@ variable "render_api_key" {
 variable "render_owner_id" {
   description = "Render owner ID"
   type        = string
-  sensitive   = true
 }
 
 variable "github_token" {
@@ -51,4 +50,32 @@ variable "github_token" {
   sensitive   = true
 }
 
+variable "organization_name" {
+    description = "Organization name"
+    type = string
+    default = "potions-369"
+  }
 
+  variable "workspace_name" {
+    description = "Workspace name"
+    type = string
+    default = "potions-infra"
+  }
+
+  variable "owner" {
+    description = "Owner id"
+    type = string
+    default = "AlfredMadere"
+  }
+
+  variable "repository_url" {
+    description = "Link to github repository"
+    type = string
+    default = "https://github.com/AlfredMadere/potions-testing"
+  }
+
+  variable "repository_full_name" {
+    description: "Name of repository"
+    type = string
+    default = "AlfredMadere/potions-testing"
+  }

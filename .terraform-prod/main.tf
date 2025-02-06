@@ -1,10 +1,10 @@
 terraform {
   cloud {
 
-    organization = "potions-369" #FIXME: CHANGE TO OFFICIAL ORGANIZATION NAME
+    organization = vars.organization_name
 
     workspaces {
-      name = "potion-infra" #FIXME: CHANGE TO OFFICIAL WORKSPACE NAME
+      name = vars.workspace_name
     }
   }
   required_providers {
@@ -48,7 +48,7 @@ provider "render" {
 
 provider "github" {
   token = var.github_token
-  owner = "AlfredMadere"
+  owner = vars.owner
 }
 
 # Create Ably app
@@ -130,7 +130,6 @@ resource "time_sleep" "wait_for_supabase" {
   create_duration = "30s"
 }
 
-
 # Execute database setup SQL
 resource "null_resource" "database_setup" {
   depends_on = [time_sleep.wait_for_supabase]
@@ -182,7 +181,6 @@ resource "null_resource" "insert_test_world" {
   }
 }
 
-
 data "supabase_apikeys" "dev" {
   depends_on  = [time_sleep.wait_for_supabase]
   project_ref = supabase_project.potions.id
@@ -192,10 +190,10 @@ data "supabase_apikeys" "dev" {
 resource "render_web_service" "potions_auth" {
   name               = "${var.project_name}-${var.environment}-auth"
   plan               = "starter"
-  region             = "oregon"
+  region             = "oregon" # or "us-east", "frankfurt", etc.
   start_command      = "cd packages/auth-server && pnpm start"
   pre_deploy_command = "echo 'hello world'"
-  root_directory     = "." # Changed to root directory
+  root_directory = "." # Changed to root directory
 
   runtime_source = {
     native_runtime = {
@@ -206,7 +204,7 @@ resource "render_web_service" "potions_auth" {
         paths         = ["src/**"]
         ignored_paths = ["tests/**"]
       }
-      repo_url = "https://github.com/AlfredMadere/potions-testing" #FIXME: CHANGE TO OFFICIAL REPO URL
+      repo_url = vars.repository_url
       runtime  = "node"
     }
   }
@@ -228,7 +226,7 @@ resource "render_web_service" "potions_auth" {
 }
 
 data "github_repository" "repo" {
-  full_name = "AlfredMadere/potions-testing" #FIXME: CHANGE TO OFFICIAL REPO NAME
+  full_name = vars.repository_full_name
 }
 
 resource "github_repository_environment" "repo_environment" {
@@ -242,7 +240,6 @@ resource "github_actions_environment_variable" "server_url" {
   variable_name = "SERVER_URL"
   value         = render_web_service.potions_auth.url
 }
-
 
 resource "render_background_worker" "potions_test_world" {
   name               = "${var.project_name}-${var.environment}-test-world"
@@ -261,7 +258,7 @@ resource "render_background_worker" "potions_test_world" {
         paths         = ["src/**"]
         ignored_paths = ["tests/**"]
       }
-      repo_url = "https://github.com/AlfredMadere/potions-testing" #FIXME: CHANGE TO OFFICIAL REPO URL
+      repo_url = vars.repository_url
       runtime  = "node"
     }
   }
